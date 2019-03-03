@@ -39,6 +39,13 @@ char **patt2grid()
 	return grid;
 }
 
+bool isValid(int r,int c)
+{
+	if(r >= 0 && r < 20 && c >= 0 && c < 35)
+		return true;
+	else 
+		return false;
+}
 //main function 
 void shortest_path()
 {
@@ -89,7 +96,9 @@ void shortest_path()
 	//marking source as visited
 	visited[sx][sy] = true;
 	int dist,n=20,m=35;
-
+	//arrays to move left right up and down
+	int row[] = {-1,0,0,1};
+	int col [] = {0,-1,1,0};
 	//main bfs algo loop
 	while(!q.empty())
 	{
@@ -106,47 +115,27 @@ void shortest_path()
 			dist = p.d;
 			break;
 		}
-
-		//moving up
-		if(p.x-1 >= 0 && visited[p.x-1][p.y] == false)
+		//loop to move up down left and right
+		for(int i = 0; i < 4; i++)
 		{
-			//pushing into queue new object
-			q.push(sh(p.x - 1 , p.y, 0,0,p.d + 1));
-			//marking true in visited
-			visited[p.x-1][p.y] = true;
-			//storing the values of previous position in g array
-			g[p.x-1][p.y].i = p.x;
-			g[p.x-1][p.y].j = p.y;
+			//getting new coordinates
+			int r = p.x + row[i];
+			int c = p.y + col[i];
+			//if its true
+			if(isValid(r,c) && visited[r][c] == false)
+			{
+				//pushing new object in queue
+				q.push(sh(r,c,0,0,p.d + 1));
+				//marking visited as true
+				visited[r][c] = true;
+				//storing the coordinates of previous cell in new cell's i and j to make path
+				g[r][c].i = p.x;
+				g[r][c].j = p.y;
+			}
 		}
 
-		//moving down
-		else if(p.x + 1 < n && visited[p.x + 1][p.y] == false)
-		{
-			q.push(sh(p.x + 1, p.y, 0,0,p.d + 1));
-			visited[p.x + 1][p.y] = true;
-			g[p.x+1][p.y].i = p.x;
-			g[p.x+1][p.y].j = p.y;
-		}
-
-		//moving left
-		if(p.y - 1 >= 0 && visited[p.x][p.y-1] == false)
-		{
-			q.push(sh(p.x, p.y - 1, 0,0,p.d + 1));
-			visited[p.x][p.y-1] = true;
-			g[p.x][p.y-1].i = p.x;
-			g[p.x][p.y-1].j = p.y;
-		}
-
-		//moving right
-		if(p.y + 1 < m && visited[p.x][p.y + 1] == false)
-		{
-			q.push(sh(p.x,p.y + 1,0,0,p.d + 1));
-			visited[p.x][p.y + 1] = true;
-			g[p.x][p.y+1].i = p.x;
-			g[p.x][p.y+1].j = p.y;
-		}
 	}
-	//if dist is > 0 means we have there is a path available
+	//if dist is > 0 means there is a path available
 	if(dist>0)
 	{
 	int f = 0;
